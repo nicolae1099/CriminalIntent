@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -60,6 +63,32 @@ public class CrimeListFragment extends Fragment {
         updateUI();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_crime_list, menu);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.new_crime:
+                Crime crime = new Crime();
+                CrimeLab.getInstance(getActivity()).addCrime(crime);
+                Intent intent = CrimePagerActivity.
+                        newIntent(getActivity(),crime.getId());
+                startActivity(intent);
+                return true;
+            default:
+                 return super.onOptionsItemSelected(item);
+        }
+    }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView titleTextView;
@@ -77,7 +106,7 @@ public class CrimeListFragment extends Fragment {
         public void bind(Crime crime) {
             this.crime = crime;
             titleTextView.setText(crime.getTitle());
-            dateTextView.setText(DateFormat.getDateInstance(DateFormat.FULL, Locale.UK).format(crime.getDate()));
+            dateTextView.setText(DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.UK).format(crime.getDate()));
             solvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
 
         }
